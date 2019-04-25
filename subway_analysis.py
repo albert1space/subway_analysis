@@ -1,3 +1,7 @@
+!pip install pyecharts-snapshot
+!pip install echarts-countries-pypkg
+!pip install echarts-china-provinces-pypkg 
+!pip install echarts-china-cities-pypkg
 from wordcloud import WordCloud, ImageColorGenerator
 from pyecharts import Line, Bar, Geo
 import matplotlib.pyplot as plt
@@ -16,20 +20,16 @@ df = pd.read_csv('subway.csv', header=None, names=['city', 'line', 'station'], e
 df_line = df.groupby(['city', 'line']).count().reset_index()
 print(df_line)
 
-
 def create_map(df):
     # 绘制地图
     value = [i for i in df['line']]
     attr = [i for i in df['city']]
     geo = Geo("已开通地铁城市分布情况", title_pos='center', title_top='0', width=800, height=400, title_color="#fff", background_color="#404a59", )
-    geo.add("", attr, value, is_visualmap=True, visual_range=[0, 25], visual_text_color="#fff", symbol_size=15)
+   geo.add("", attr, value, is_visualmap=True, visual_range=[0, 25], maptype='china',visual_text_color="#fff", symbol_size=15)
     geo.render("已开通地铁城市分布情况.html")
 
-
 def create_line(df):
-    """
-    生成城市地铁线路数量分布情况
-    """
+    """ 生成城市地铁线路数量分布情况 """
     title_len = df['line']
     bins = [0, 5, 10, 15, 20, 25]
     level = ['0-5', '5-10', '10-15', '15-20', '20以上']
@@ -40,7 +40,6 @@ def create_line(df):
     bar = Bar("各城市地铁线路数量分布", title_pos='center', title_top='18', width=800, height=400)
     bar.add("", attr, v1, is_stack=True, is_label_show=True)
     bar.render("各城市地铁线路数量分布.html")
-
 
 # 各个城市地铁线路数
 df_city = df_line.groupby(['city']).count().reset_index().sort_values(by='line', ascending=False)
@@ -60,9 +59,7 @@ print(df_station.groupby(['city']).count().reset_index().sort_values(by='station
 
 
 def create_wordcloud(df):
-    """
-    生成地铁名词云
-    """
+    """生成地铁名词云 """
     # 分词
     text = ''
     for line in df['station']:
@@ -100,11 +97,8 @@ for line in df['station']:
         # 将字符串输出一个个中文
         words.append(i)
 
-
 def all_np(arr):
-    """
-    统计单字频率
-    """
+    """ 统计单字频率 """
     arr = np.array(arr)
     key = np.unique(arr)
     result = {}
@@ -115,17 +109,13 @@ def all_np(arr):
         result[k] = v
     return result
 
-
 def create_word(word_message):
-    """
-    生成柱状图
-    """
+    """ 生成柱状图"""
     attr = [j[0] for j in word_message]
     v1 = [j[1] for j in word_message]
     bar = Bar("中国地铁站最爱用的字", title_pos='center', title_top='18', width=800, height=400)
     bar.add("", attr, v1, is_stack=True, is_label_show=True)
     bar.render("中国地铁站最爱用的字.html")
-
 
 word = all_np(words)
 word_message = sorted(word.items(), key=lambda x: x[1], reverse=True)[:10]
@@ -154,9 +144,7 @@ print(df2)
 
 
 def create_door(door):
-    """
-    生成柱状图
-    """
+    """ 生成柱状图 """
     attr = [j for j in door['city'][:3]]
     v1 = [j for j in door['line'][:3]]
     bar = Bar("地铁站最爱用“门”命名的城市", title_pos='center', title_top='18', width=800, height=400)
@@ -170,7 +158,6 @@ df1 = df_station[df_station['station'].str.contains('门')]
 df2 = df1.groupby(['city']).count().reset_index().sort_values(by='line', ascending=False)
 print(df2)
 create_door(df2)
-
 
 # 选取北京的地铁站
 df1 = df_station[df_station['city'] == '北京']
